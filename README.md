@@ -24,6 +24,9 @@ Detect patterns related to cultivated area and output
 
 The processed data is stored in a MySQL database, queried using SQL, and visualized through Power BI interactive dashboards, allowing users to dynamically explore agricultural trends using filters and slicers.
 
+<img width="474" height="316" alt="image" src="https://github.com/user-attachments/assets/4cb72465-127e-433b-8140-d70512354dae" />
+
+
 🎯 Objectives of the Project
 
 To perform exploratory data analysis on Indian agriculture data
