@@ -1,0 +1,106 @@
+CREATE DATABASE agriculture;
+USE agriculture;
+CREATE TABLE crop_production (
+    state VARCHAR(100),
+    district VARCHAR(100),
+    year INT,
+    crop VARCHAR(50),
+    area FLOAT,
+    production FLOAT,
+    yield FLOAT
+);	
+SET GLOBAL local_infile = 1;
+LOAD DATA INFILE "C:/Users/Priya/Downloads/project/Agri/agri_data.csv"
+INTO TABLE crop_production
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+SHOW VARIABLES LIKE 'secure_file_priv';
+SET GLOBAL local_infile = 1;
+SHOW GRANTS FOR CURRENT_USER();
+SHOW VARIABLES LIKE 'secure_file_priv';
+INSERT INTO crop_production VALUES
+('Tamil Nadu','Thanjavur',2017,'Rice',1200,4800,4.0),
+('Tamil Nadu','Thanjavur',2018,'Rice',1250,5000,4.2),
+('Punjab','Ludhiana',2017,'Wheat',1500,6000,4.0),
+('Punjab','Ludhiana',2018,'Wheat',1550,6400,4.1),
+('Karnataka','Raichur',2017,'Maize',900,2700,3.0),
+('Gujarat','Junagadh',2017,'Groundnut',800,3200,4.0),
+('Maharashtra','Nagpur',2019,'Cotton',1100,3300,3.0),
+('Madhya Pradesh','Indore',2020,'Oilseeds',1000,4000,4.0);
+LOAD DATA INFILE 'agri_data.csv'
+INTO TABLE crop_production
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS
+1️⃣ Year-wise Trend of Rice Production (Top 3 States)
+SELECT year, state, SUM(production) AS total_production
+FROM crop_production
+WHERE crop = 'Rice'
+GROUP BY year, state
+ORDER BY total_production DESC
+LIMIT 3;
+2️⃣ Top 5 Districts by Wheat Yield Increase (Last 5 Years)
+SELECT district,
+       MAX(yield) - MIN(yield) AS yield_increase
+FROM crop_production
+WHERE crop = 'Wheat'
+  AND year >= (SELECT MAX(year) - 5 FROM crop_production)
+GROUP BY district
+ORDER BY yield_increase DESC
+LIMIT 5;
+3️⃣ States with Highest Oilseed Production Growth (5 Years)
+SELECT state,
+       (MAX(production) - MIN(production)) / MIN(production) * 100 AS growth_rate
+FROM crop_production
+WHERE crop = 'Oilseeds'
+  AND year >= (SELECT MAX(year) - 5 FROM crop_production)
+GROUP BY state
+ORDER BY growth_rate DESC;
+4️⃣ Area vs Production Relationship (MySQL Version)
+SELECT district, crop,
+       AVG(area) AS avg_area,
+       AVG(production) AS avg_production
+FROM crop_production
+WHERE crop IN ('Rice','Wheat','Maize')
+GROUP BY district, crop;
+5️⃣ Yearly Cotton Production (Top 5 States)
+SELECT year, state, SUM(production) AS total_production
+FROM crop_production
+WHERE crop = 'Cotton'
+GROUP BY year, state
+ORDER BY total_production DESC
+LIMIT 5;
+6️⃣ Highest Groundnut Production Districts (2017)
+SELECT district, SUM(production) AS total_production
+FROM crop_production
+WHERE crop = 'Groundnut' AND year = 2017
+GROUP BY district
+ORDER BY total_production DESC;
+7️⃣ Annual Average Maize Yield
+SELECT year, AVG(yield) AS avg_yield
+FROM crop_production
+WHERE crop = 'Maize'
+GROUP BY year
+ORDER BY year;
+8️⃣ Total Area for Oilseeds (State-wise)
+SELECT state, SUM(area) AS total_area
+FROM crop_production
+WHERE crop = 'Oilseeds'
+GROUP BY state
+ORDER BY total_area DESC;
+9️⃣ Districts with Highest Rice Yield
+SELECT district, MAX(yield) AS highest_yield
+FROM crop_production
+WHERE crop = 'Rice'
+GROUP BY district
+ORDER BY highest_yield DESC;
+10 Wheat vs Rice Production (Top 5 States – 10 Years)
+SELECT year, state, crop, SUM(production) AS total_production
+FROM crop_production
+WHERE crop IN ('Rice','Wheat')
+  AND year >= (SELECT MAX(year) - 10 FROM crop_production)
+GROUP BY year, state, crop
+ORDER BY state, year;
